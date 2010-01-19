@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "table_builder"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{Automagical tables for Rails}
+    gem.description = %Q{Building tables by hand is tedious, boring, and error-prone. Make the hurting stop.}
     gem.email = "lcaplan@onehub.com"
     gem.homepage = "http://github.com/onehub/table_builder"
     gem.authors = ["Leigh Caplan"]
