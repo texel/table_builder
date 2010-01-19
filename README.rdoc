@@ -1,6 +1,6 @@
 = table_builder
 
-Description goes here.
+Building tables by hand is tedious, boring, and error-prone. Make the hurting stop.
 
 == Note on Patches/Pull Requests
  
