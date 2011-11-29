@@ -17,64 +17,66 @@ module TableBuilder
       table_class << options.delete(:class)
       table_class = table_class.compact.join ' '
 
-      concat '<div class="table">'
-      concat "<table cellspacing=\"0\" cellpadding=\"0\" class=\"#{table_class}\">"
+      with_output_buffer do
+        concat '<div class="table">'
+        concat "<table cellspacing=\"0\" cellpadding=\"0\" class=\"#{table_class}\">"
 
-      yield builder
+        yield builder
 
-      # <colgroup>
-      #   <col class="id" />
-      #   <col class="code" />
-      # </colgroup>
+        # <colgroup>
+        #   <col class="id" />
+        #   <col class="code" />
+        # </colgroup>
 
-      concat '<colgroup>'
+        concat '<colgroup>'
 
-      number_of_columns = builder.columns.size
+        number_of_columns = builder.columns.size
 
-      builder.columns.each_with_index do |column, index|
-        concat "<col class=\"#{column[:name]}#{" last" if (index + 1 == number_of_columns)}\" />"
-      end
-      concat '</colgroup>'
+        builder.columns.each_with_index do |column, index|
+          concat "<col class=\"#{column[:name]}#{" last" if (index + 1 == number_of_columns)}\" />"
+        end
+        concat '</colgroup>'
 
-      # <thead>
-      #   <tr>
-      #         <th>ID</th>
-      #         <th>Code</th>
-      #   </tr>
-      # </thead>
+        # <thead>
+        #   <tr>
+        #         <th>ID</th>
+        #         <th>Code</th>
+        #   </tr>
+        # </thead>
 
-      concat '<thead><tr>'
-      builder.columns.each do |column|
-        th_options = column[:th] || {}
-        
-        style = []
-        style << 'display:none;' if column[:hidden]
-        style << th_options[:style]
-        style = style.compact.join ' '
-
-        concat "<th class=\"#{th_options[:class]}\" id=\"#{th_options[:id]}\" style=\"#{style}\" >"
-        concat column[:label]
-        concat '</th>'
-      end
-      concat '</tr></thead>'
-      concat '<tbody>'
-      object.each do |row|
-        concat "<tr class=\"#{cycle('', 'odd') unless options[:sortable]}\">"
+        concat '<thead><tr>'
         builder.columns.each do |column|
+          th_options = column[:th] || {}
+
           style = []
           style << 'display:none;' if column[:hidden]
-          style << column[:th_style]
+          style << th_options[:style]
           style = style.compact.join ' '
 
-          concat "<td class=\"#{column[:td_class]}\" id=\"#{column[:td_id]}\" style=\"#{style}\">"
-          concat column[:value].call(row).to_s || ''
-          concat '</td>'
+          concat "<th class=\"#{th_options[:class]}\" id=\"#{th_options[:id]}\" style=\"#{style}\" >"
+          concat column[:label]
+          concat '</th>'
         end
-        concat '</tr>'
+        concat '</tr></thead>'
+        concat '<tbody>'
+        object.each do |row|
+          concat "<tr class=\"#{cycle('', 'odd') unless options[:sortable]}\">"
+          builder.columns.each do |column|
+            style = []
+            style << 'display:none;' if column[:hidden]
+            style << column[:th_style]
+            style = style.compact.join ' '
+
+            concat "<td class=\"#{column[:td_class]}\" id=\"#{column[:td_id]}\" style=\"#{style}\">"
+            concat column[:value].call(row).to_s || ''
+            concat '</td>'
+          end
+          concat '</tr>'
+        end
+        concat '</tbody>'
+        concat '</table>'
+        concat '</div>'
       end
-      concat '</tbody>'
-      concat '</table>'
-      concat '</div>'
     end
   end
 end
